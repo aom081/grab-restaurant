@@ -3,7 +3,7 @@ import React from "react";
 const Card = ({ title, type, img, onDelete, onEdit }) => {
   return (
     <div>
-      <div className="card bg-base-100 w-96 shadow-lg hover:shadow-2xl transition-shadow duration-300 rounded-lg">
+      <div className="card bg-base-100 w-96 h-100 shadow-lg hover:shadow-2xl transition-shadow duration-300 rounded-lg">
         <figure>
           <img
             src={img}
