@@ -1,12 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router";
 
-
-const AddRestaurant = () => {
+const EditRestaurant = () => {
+  // Get the restaurant ID from the URL parameters
+  const { id } = useParams();
   const [restaurant, setRestaurant] = useState({
     title: "",
     type: "",
     img: "",
   });
+
+  //Get restaurant data by ID
+  useEffect(() => {
+    fetch(`http://localhost:3000/restaurants/${id}`)
+      .then((res) => {
+        //convert response to JSON
+        return res.json();
+      })
+      .then((response) => {
+        //save to state
+        setRestaurant(response);
+      })
+      .catch((error) => {
+        //catch any errors
+        console.error("Error fetching restaurants:", error);
+      });
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -14,29 +33,29 @@ const AddRestaurant = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
     try {
-      const response = await fetch("http://localhost:3000/restaurants", {
-        method: "POST",
+      const response = await fetch("http://localhost:3000/restaurants/" + id, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(restaurant),
       });
       if (response.ok) {
-        alert("Restaurant added successfully!");
+        alert("Restaurant update successfully!");
         setRestaurant({ title: "", type: "", img: "" }); // Reset form
         // In real app, redirect to home or show success message
       } else {
         alert("Failed to add restaurant. Please try again.");
       }
     } catch (error) {
-      console.error("Error adding restaurant:", error);
+      console.error("Error update restaurant:", error);
       alert("An error occurred while adding the restaurant. Please try again.");
     }
   };
 
   const handleCancel = () => {
+    // In real app, redirect to home here
     alert("Cancelled. Returning to home page.");
     window.location.href = "/"; // Redirect to home page
   };
@@ -46,12 +65,12 @@ const AddRestaurant = () => {
       <div>
         {/* Header Section */}
         <h1 className="font-bold text-3xl text-center mt-8 mb-4 text-primary">
-          Add Restaurant
+          Update Restaurant
         </h1>
 
-        {/* Form Section */}
-        <form
-          className="card w-full max-w-md mx-auto shadow-xl rounded-lg p-8 bg-img"
+        {/* restaurant Section */}
+        <restaurant
+          className="card  w-full max-w-md mx-auto shadow-xl rounded-lg p-8 bg-img"
           onSubmit={handleSubmit}
         >
           <div className="card-body items-center">
@@ -104,7 +123,7 @@ const AddRestaurant = () => {
 
             <div className="flex w-full gap-2 mt-2">
               <button type="submit" className="btn btn-primary flex-1">
-                Add Restaurant
+                Update Restaurant
               </button>
               <button
                 type="button"
@@ -122,10 +141,10 @@ const AddRestaurant = () => {
               &larr; Return to Home
             </button>
           </div>
-        </form>
+        </restaurant>
       </div>
     </div>
   );
 };
 
-export default AddRestaurant;
+export default EditRestaurant;

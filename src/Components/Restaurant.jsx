@@ -1,15 +1,12 @@
 import React from "react";
 import Card from "./Card";
 
-const handleEdit = (id) => {
-  alert(`Edit restaurant with id: ${id}`);
-};
-
-const handleDelete = (id) => {
-  alert(`Delete restaurant with id: ${id}`);
-};
-
 const Restaurant = ({ restaurants }) => {
+  const handleDelete = (id) => {
+    // Add your delete logic here
+    console.log("Delete restaurant with id:", id);
+  };
+
   return (
     <div className="flex flex-col items-center">
       <div className="flex flex-wrap justify-center gap-6">
@@ -17,11 +14,10 @@ const Restaurant = ({ restaurants }) => {
           restaurants.map((restaurant) => (
             <Card
               key={restaurant.id}
+              id={restaurant.id}
               title={restaurant.title}
               type={restaurant.type}
               img={restaurant.img}
-              onEdit={() => handleEdit(restaurant.id)}
-              onDelete={() => handleDelete(restaurant.id)}
             />
           ))}
       </div>

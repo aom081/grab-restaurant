@@ -3,11 +3,11 @@ import AddRestaurant from "../Pages/AddRestaurant";
 
 const Navbar = () => {
   const menuitems = [
-    { name: "Add restaurant", url: "/" },
+    { name: "Add restaurant", url: "/Add" },
     { name: "Search", url: "/" },
   ];
   return (
-    <div className="navbar bg-base-100 shadow-sm">
+    <div className="navbar bg-base-10 shadow-sm">
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -33,20 +33,20 @@ const Navbar = () => {
           >
             {menuitems.map((item) => {
               return (
-                <li>
+                <li key={item.name}>
                   <a href={item.url}>{item.name}</a>
                 </li>
               );
             })}
           </ul>
         </div>
-        <a className="btn btn-ghost text-xl">Grad Restaurant</a>
+        <a className="btn btn-ghost text-xl" href="/">Grad Restaurant</a>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           {menuitems.map((item) => {
             return (
-              <li>
+              <li key={item.name}>
                 <a href={item.url}>{item.name}</a>
               </li>
             );
