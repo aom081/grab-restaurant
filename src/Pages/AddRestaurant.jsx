@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 
-
 const AddRestaurant = () => {
   const [restaurant, setRestaurant] = useState({
     title: "",
     type: "",
     img: "",
   });
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMsg, setAlertMsg] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -14,7 +15,7 @@ const AddRestaurant = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
     try {
       const response = await fetch("http://localhost:3000/restaurants", {
         method: "POST",
@@ -24,32 +25,44 @@ const AddRestaurant = () => {
         body: JSON.stringify(restaurant),
       });
       if (response.ok) {
-        alert("Restaurant added successfully!");
+        setAlertMsg("Restaurant added successfully!");
+        setShowAlert(true);
         setRestaurant({ title: "", type: "", img: "" }); // Reset form
-        // In real app, redirect to home or show success message
       } else {
-        alert("Failed to add restaurant. Please try again.");
+        setAlertMsg("Failed to add restaurant. Please try again.");
+        setShowAlert(true);
       }
     } catch (error) {
       console.error("Error adding restaurant:", error);
-      alert("An error occurred while adding the restaurant. Please try again.");
+      setAlertMsg(
+        "An error occurred while adding the restaurant. Please try again."
+      );
+      setShowAlert(true);
     }
   };
 
   const handleCancel = () => {
-    alert("Cancelled. Returning to home page.");
-    window.location.href = "/"; // Redirect to home page
+    setAlertMsg("Cancelled. Returning to home page.");
+    setShowAlert(true);
+  };
+
+  const handleAlertClose = () => {
+    setShowAlert(false);
+    if (
+      alertMsg.includes("successfully") ||
+      alertMsg.includes("Returning to home")
+    ) {
+      window.location.href = "/";
+    }
   };
 
   return (
-    <div className="mx-auto min-h-screen ">
+    <div className="mx-auto min-h-screen">
       <div>
-        {/* Header Section */}
         <h1 className="font-bold text-3xl text-center mt-8 mb-4 text-primary">
           Add Restaurant
         </h1>
 
-        {/* Form Section */}
         <form
           className="card w-full max-w-md mx-auto shadow-xl rounded-lg p-8 bg-img"
           onSubmit={handleSubmit}
@@ -124,6 +137,25 @@ const AddRestaurant = () => {
           </div>
         </form>
       </div>
+
+      {/* Modal Alert */}
+      {showAlert && (
+        <dialog className="modal modal-open">
+          <div className="modal-box text-center">
+            <h3 className="font-bold text-lg text-primary mb-2">
+              Notification
+            </h3>
+            <p className="py-2 text-base">{alertMsg}</p>
+            <div className="modal-action justify-center">
+              <form method="dialog">
+                <button className="btn btn-primary" onClick={handleAlertClose}>
+                  OK
+                </button>
+              </form>
+            </div>
+          </div>
+        </dialog>
+      )}
     </div>
   );
 };

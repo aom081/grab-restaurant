@@ -2,27 +2,20 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router";
 
 const EditRestaurant = () => {
-  // Get the restaurant ID from the URL parameters
   const { id } = useParams();
   const [restaurant, setRestaurant] = useState({
     title: "",
     type: "",
     img: "",
   });
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMsg, setAlertMsg] = useState("");
 
-  //Get restaurant data by ID
   useEffect(() => {
     fetch(`http://localhost:3000/restaurants/${id}`)
-      .then((res) => {
-        //convert response to JSON
-        return res.json();
-      })
-      .then((response) => {
-        //save to state
-        setRestaurant(response);
-      })
+      .then((res) => res.json())
+      .then((response) => setRestaurant(response))
       .catch((error) => {
-        //catch any errors
         console.error("Error fetching restaurants:", error);
       });
   }, [id]);
@@ -33,6 +26,7 @@ const EditRestaurant = () => {
   };
 
   const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
       const response = await fetch("http://localhost:3000/restaurants/" + id, {
         method: "PUT",
@@ -41,23 +35,34 @@ const EditRestaurant = () => {
         },
         body: JSON.stringify(restaurant),
       });
+
       if (response.ok) {
-        alert("Restaurant update successfully!");
-        setRestaurant({ title: "", type: "", img: "" }); // Reset form
-        // In real app, redirect to home or show success message
+        setAlertMsg("Restaurant updated successfully!");
+        setShowAlert(true);
+
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 2000);
       } else {
-        alert("Failed to add restaurant. Please try again.");
+        setAlertMsg("Failed to update restaurant. Please try again.");
+        setShowAlert(true);
       }
     } catch (error) {
       console.error("Error update restaurant:", error);
-      alert("An error occurred while adding the restaurant. Please try again.");
+      setAlertMsg(
+        "An error occurred while updating the restaurant. Please try again."
+      );
+      setShowAlert(true);
     }
   };
 
   const handleCancel = () => {
-    // In real app, redirect to home here
-    alert("Cancelled. Returning to home page.");
-    window.location.href = "/"; // Redirect to home page
+    setAlertMsg("Cancelled. Returning to home page.");
+    setShowAlert(true);
+  };
+
+  const handleAlertClose = () => {
+    setShowAlert(false);
   };
 
   return (
@@ -68,9 +73,9 @@ const EditRestaurant = () => {
           Update Restaurant
         </h1>
 
-        {/* restaurant Section */}
-        <restaurant
-          className="card  w-full max-w-md mx-auto shadow-xl rounded-lg p-8 bg-img"
+        {/* Form Section */}
+        <form
+          className="card w-full max-w-md mx-auto shadow-xl rounded-lg p-8 bg-img"
           onSubmit={handleSubmit}
         >
           <div className="card-body items-center">
@@ -141,8 +146,26 @@ const EditRestaurant = () => {
               &larr; Return to Home
             </button>
           </div>
-        </restaurant>
+        </form>
       </div>
+      {/* daisyUI Alert */}
+      {showAlert && (
+        <dialog className="modal modal-open">
+          <div className="modal-box text-center">
+            <h3 className="font-bold text-lg text-primary mb-2">
+              Notification
+            </h3>
+            <p className="py-2 text-base">{alertMsg}</p>
+            <div className="modal-action justify-center">
+              <form method="dialog">
+                <button className="btn btn-primary" onClick={handleAlertClose}>
+                  OK
+                </button>
+              </form>
+            </div>
+          </div>
+        </dialog>
+      )}
     </div>
   );
 };
